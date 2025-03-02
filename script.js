@@ -1,41 +1,31 @@
-// Function to get URL query parameters
+// Function to get query parameters
 function getQueryParams() {
     const params = new URLSearchParams(window.location.search);
     return {
-        key: params.get('key'),
-        value: params.get('value')
+        key: params.get("key") || "defaultKey",
+        value: params.get("value") || "defaultValue"
     };
 }
 
-// Push parameters to GTM Data Layer
+// Push data to Google Tag Manager Data Layer
 window.dataLayer = window.dataLayer || [];
 const queryParams = getQueryParams();
-if (queryParams.key && queryParams.value) {
-    window.dataLayer.push({
-        event: "customEvent",
-        key: queryParams.key,
-        value: queryParams.value
-    });
-    console.log("Pushed to GTM Data Layer:", queryParams);
-}
+window.dataLayer.push({
+    event: "queryCaptured",
+    key: queryParams.key,
+    value: queryParams.value
+});
 
-// API Request using parameters from GTM Data Layer
-document.getElementById("sendRequest").addEventListener("click", function() {
-    window.dataLayer.push({
-        event: "buttonClick",
-        key: queryParams.key || "testKey",
-        value: queryParams.value || "testValue"
-    });
-    console.log("Data pushed to GTM:", window.dataLayer);
+// Update the UI with the discount value
+document.addEventListener("DOMContentLoaded", () => {
+    const discountText = document.getElementById("discount-text");
+    discountText.innerText = `You have a special offer: ${queryParams.value}`;
+});
 
-    if (queryParams.key && queryParams.value) {
-        const apiUrl = `https://httpbin.org/get?key=${queryParams.key}&value=${queryParams.value}`;
-        
-        fetch(apiUrl)
-            .then(response => response.json())
-            .then(data => console.log("API Response:", data))
-            .catch(error => console.error("Error fetching API:", error));
-    } else {
-        console.warn("No valid query parameters found!");
-    }
+// API Call on Button Click
+document.getElementById("fetch-data").addEventListener("click", () => {
+    fetch(`https://httpbin.org/get?key=${queryParams.key}&value=${queryParams.value}`)
+        .then(response => response.json())
+        .then(data => console.log("API Response:", data))
+        .catch(error => console.error("API Error:", error));
 });

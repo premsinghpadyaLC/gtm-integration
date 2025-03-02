@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTM Integration</title>
-    
+    <title>Discount Offer</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -12,24 +13,16 @@
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-54XT7VWG');</script>
     <!-- End Google Tag Manager -->
-     
-
-    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Google Tag Manager (noscript) -->
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-54XT7VWG"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
-    <!-- End Google Tag Manager (noscript) -->
-
-    <h1>GTM & API Integration</h1>
-    <p>Click the button below to send API request with query parameters.</p>
-
-    <!-- Button to send API request -->
-    <button id="sendRequest">Send API Request</button>
-
-    <script src="script.js"></script>
+    <div class="container">
+        <h1>Special Discount Offer</h1>
+        <p id="discount-text">Loading discount...</p>
+        <button id="fetch-data">Fetch API Data</button>
+    </div>
 </body>
 </html>

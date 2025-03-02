@@ -2,6 +2,15 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     margin: 50px;
+    background-color: #f5f5f5;
+}
+
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    display: inline-block;
 }
 
 button {
@@ -11,6 +20,7 @@ button {
     border: none;
     cursor: pointer;
     font-size: 16px;
+    margin-top: 20px;
 }
 
 button:hover {
