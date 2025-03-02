@@ -11,16 +11,23 @@ function getQueryParams() {
 window.dataLayer = window.dataLayer || [];
 const queryParams = getQueryParams();
 if (queryParams.key && queryParams.value) {
-    dataLayer.push({
-        'event': 'customEvent',
-        'key': queryParams.key,
-        'value': queryParams.value
+    window.dataLayer.push({
+        event: "customEvent",
+        key: queryParams.key,
+        value: queryParams.value
     });
     console.log("Pushed to GTM Data Layer:", queryParams);
 }
 
 // API Request using parameters from GTM Data Layer
 document.getElementById("sendRequest").addEventListener("click", function() {
+    window.dataLayer.push({
+        event: "buttonClick",
+        key: queryParams.key || "testKey",
+        value: queryParams.value || "testValue"
+    });
+    console.log("Data pushed to GTM:", window.dataLayer);
+
     if (queryParams.key && queryParams.value) {
         const apiUrl = `https://httpbin.org/get?key=${queryParams.key}&value=${queryParams.value}`;
         
