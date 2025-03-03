@@ -1,43 +1,39 @@
 body {
     font-family: Arial, sans-serif;
+    text-align: center;
     margin: 0;
     padding: 0;
-    text-align: center;
-    background-color: #fff3e0;
+    background-color: #f8f9fa;
 }
 
 header {
-    background-color: #ff9800;
+    background-color: #d9534f;
     color: white;
     padding: 20px;
-    font-size: 24px;
 }
 
-main {
-    padding: 20px;
+section {
+    margin-top: 50px;
 }
 
 button {
-    background-color: #ff9800;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #0275d8;
     color: white;
     border: none;
-    padding: 10px 20px;
-    font-size: 18px;
-    cursor: pointer;
     border-radius: 5px;
     margin-top: 10px;
 }
 
 button:hover {
-    background-color: #e68900;
+    background-color: #025aa5;
 }
 
-#apiResponse {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: white;
-    border: 1px solid #ccc;
-    display: inline-block;
-    max-width: 80%;
-    word-wrap: break-word;
+footer {
+    margin-top: 50px;
+    padding: 20px;
+    background-color: #333;
+    color: white;
 }
