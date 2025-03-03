@@ -1,17 +1,22 @@
 // Google Tag Manager Data Layer Setup
 window.dataLayer = window.dataLayer || [];
 
-// Function to get query parameters from the URL
+// Function to get query parameters from the URL and filter out GTM-related params
 function getQueryParams() {
     let params = new URLSearchParams(window.location.search);
     let queryParams = {};
 
+    // Exclude GTM-related parameters
+    const excludedParams = ["gtm.start", "event", "gtm.uniqueEventId", "gtm_debug"];
+
     for (let [key, value] of params.entries()) {
-        queryParams[key] = value;
-        window.dataLayer.push({ [key]: value }); // Push each param to GTM Data Layer
+        if (!excludedParams.includes(key)) {
+            queryParams[key] = value;
+            window.dataLayer.push({ [key]: value }); // Push to GTM Data Layer
+        }
     }
 
-    console.log("Query Parameters:", queryParams);
+    console.log("Filtered Query Parameters:", queryParams);
 
     // Display Discount Info if applicable
     if (queryParams.discount) {
@@ -20,13 +25,19 @@ function getQueryParams() {
     }
 }
 
-// Function to send API Request with correct key-value pair
+// Function to send API Request with only relevant key-value pairs
 function fetchAPIData() {
     let queryData = {};
 
-    // Extract key-value pairs from GTM Data Layer
+    // Extract key-value pairs from GTM Data Layer and filter out GTM-related parameters
+    const excludedParams = ["gtm.start", "event", "gtm.uniqueEventId", "gtm_debug"];
+
     for (let obj of window.dataLayer) {
-        Object.assign(queryData, obj);
+        for (let key in obj) {
+            if (!excludedParams.includes(key)) {
+                queryData[key] = obj[key];
+            }
+        }
     }
 
     if (Object.keys(queryData).length > 0) {
@@ -40,13 +51,13 @@ function fetchAPIData() {
             .then(data => {
                 console.log("API Response:", data);
 
-                // Display response on webpage instead of console
+                // Display response on webpage
                 document.getElementById('discount-info').innerText = 
                     `✅ API Response: ${JSON.stringify(data.args, null, 2)}`;
             })
             .catch(error => console.error("❌ Error fetching API:", error));
     } else {
-        alert("⚠️ No valid query parameters found in GTM Data Layer!");
+        alert("⚠️ No valid query parameters found!");
     }
 }
 
