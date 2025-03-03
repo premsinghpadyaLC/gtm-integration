@@ -4,38 +4,35 @@ window.dataLayer = window.dataLayer || [];
 // Function to get query parameters from the URL
 function getQueryParams() {
     let params = new URLSearchParams(window.location.search);
-    let key = params.get('key');
-    let value = params.get('value');
+    let queryParams = {};
 
-    if (key && value) {
-        console.log(`Query Params: ${key} = ${value}`);
+    for (let [key, value] of params.entries()) {
+        queryParams[key] = value;
+        window.dataLayer.push({ [key]: value }); // Push each param to GTM Data Layer
+    }
 
-        // Push data to GTM Data Layer
-        window.dataLayer.push({ [key]: value });
+    console.log("Query Parameters:", queryParams);
 
-        // Display Discount Info if applicable
-        if (key === "discount") {
-            document.getElementById('discount-info').innerText = `Special Offer: ${value} Discount!`;
-        }
+    // Display Discount Info if applicable
+    if (queryParams.discount) {
+        document.getElementById('discount-info').innerText = 
+            `🎉 Special Offer: ${queryParams.discount} Discount!`;
     }
 }
 
 // Function to send API Request with correct key-value pair
 function fetchAPIData() {
-    let key, value;
+    let queryData = {};
 
     // Extract key-value pairs from GTM Data Layer
     for (let obj of window.dataLayer) {
-        let keys = Object.keys(obj);
-        if (keys.length > 0) {
-            key = keys[0];   // Get the first key
-            value = obj[key]; // Get the corresponding value
-            break;
-        }
+        Object.assign(queryData, obj);
     }
 
-    if (key && value) {
-        let apiUrl = `https://httpbin.org/get?${key}=${encodeURIComponent(value)}`;
+    if (Object.keys(queryData).length > 0) {
+        let queryString = new URLSearchParams(queryData).toString();
+        let apiUrl = `https://httpbin.org/get?${queryString}`;
+
         console.log(`Fetching API: ${apiUrl}`);
 
         fetch(apiUrl)
@@ -45,11 +42,11 @@ function fetchAPIData() {
 
                 // Display response on webpage instead of console
                 document.getElementById('discount-info').innerText = 
-                    `API Response: ${JSON.stringify(data.args)}`;
+                    `✅ API Response: ${JSON.stringify(data.args, null, 2)}`;
             })
-            .catch(error => console.error("Error fetching API:", error));
+            .catch(error => console.error("❌ Error fetching API:", error));
     } else {
-        alert("No valid query parameters found in GTM Data Layer!");
+        alert("⚠️ No valid query parameters found in GTM Data Layer!");
     }
 }
 
