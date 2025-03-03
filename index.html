@@ -3,85 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTM Integration</title>
+    <title>Discount Page</title>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-MX9RCJTX');</script>
+    <!-- End Google Tag Manager -->
     <script>
-        // Initialize GTM Data Layer if not already defined
-        window.dataLayer = window.dataLayer || [];
-
-        // Function to extract query parameters from URL
-        function getQueryParams() {
+        // Get the discount code from the URL
+        function getDiscountCode() {
             const params = new URLSearchParams(window.location.search);
-            const key = params.get("key");
-            const value = params.get("value");
-
-            if (key && value) {
-                // Push key-value pair into GTM Data Layer
+            const discountCode = params.get('discount');
+            
+            if (discountCode) {
+                // Push to GTM Data Layer
+                window.dataLayer = window.dataLayer || [];
                 window.dataLayer.push({
-                    event: "queryParamsCaptured",
-                    key: key,
-                    value: value
+                    'discount_code': discountCode,
+                    'event': 'discountApplied'
                 });
 
-                console.log("Data Layer Updated:", window.dataLayer);
-            } else {
-                console.error("Key and value not found in dataLayer.");
+                // Display discount on page
+                document.getElementById('discountMessage').innerText = 
+                    `🎉 Congrats! Your discount code "${discountCode}" is applied!`;
             }
         }
-
-        // Wait for GTM to load before extracting query params
-        window.addEventListener("load", () => {
-            setTimeout(getQueryParams, 500); // Delay to ensure GTM is ready
-        });
+        window.onload = getDiscountCode;
     </script>
-
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer','GTM-MX9RCJTX');</script>
-    <!-- End Google Tag Manager -->
-
 </head>
 <body>
-
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MX9RCJTX"
-        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
-
-    <h1>GTM Data Layer Example</h1>
-    <button onclick="sendApiRequest()">Send API Request</button>
-
-    <!-- Section to display API response -->
-    <h2>API Response:</h2>
-    <pre id="apiResponse">No response yet.</pre>
-
-    <script>
-        // Function to send API request using query params from GTM Data Layer
-        function sendApiRequest() {
-            const keyValuePair = window.dataLayer.find(obj => obj.key && obj.value);
-            
-            if (!keyValuePair) {
-                console.error("Key and value not found in dataLayer.");
-                document.getElementById("apiResponse").textContent = "Error: Key and value not found in dataLayer.";
-                return;
-            }
-
-            const apiUrl = `https://httpbin.org/get?key=${keyValuePair.key}&value=${keyValuePair.value}`;
-            fetch(apiUrl)
-                .then(response => response.json())
-                .then(data => {
-                    console.log("API Response:", data);
-                    // Display API response in the UI
-                    document.getElementById("apiResponse").textContent = JSON.stringify(data, null, 2);
-                })
-                .catch(error => {
-                    console.error("API Error:", error);
-                    document.getElementById("apiResponse").textContent = "Error: Unable to fetch API response.";
-                });
-        }
-    </script>
-
+    
+    <h1>Welcome to Our Discount Page!</h1>
+    <p id="discountMessage">Enter a discount code in the URL.</p>
 </body>
 </html>
