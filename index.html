@@ -3,7 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discount Page</title>
+    <title>GTM Integration</title>
+    <script>
+        // Initialize GTM Data Layer if not already defined
+        window.dataLayer = window.dataLayer || [];
+
+        // Function to extract query parameters from URL
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            const key = params.get("key");
+            const value = params.get("value");
+
+            if (key && value) {
+                // Push key-value pair into GTM Data Layer
+                window.dataLayer.push({
+                    event: "queryParamsCaptured",
+                    key: key,
+                    value: value
+                });
+
+                console.log("Data Layer Updated:", window.dataLayer);
+            } else {
+                console.error("Key and value not found in dataLayer.");
+            }
+        }
+
+        // Wait for GTM to load before extracting query params
+        window.addEventListener("load", () => {
+            setTimeout(getQueryParams, 500); // Delay to ensure GTM is ready
+        });
+    </script>
 
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -12,34 +41,51 @@
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-MX9RCJTX');</script>
     <!-- End Google Tag Manager -->
+
     <script>
-        // Get the discount code from the URL
-        function getDiscountCode() {
+        // Function to get URL query parameters
+        function getQueryParams() {
             const params = new URLSearchParams(window.location.search);
-            const discountCode = params.get('discount');
-            
-            if (discountCode) {
-                // Push to GTM Data Layer
+            const key = params.get('key');
+            const value = params.get('value');
+            if (key && value) {
                 window.dataLayer = window.dataLayer || [];
                 window.dataLayer.push({
-                    'discount_code': discountCode,
-                    'event': 'discountApplied'
+                    'key': key,
+                    'value': value,
+                    'event': 'queryParamsCaptured'
                 });
-
-                // Display discount on page
-                document.getElementById('discountMessage').innerText = 
-                    `🎉 Congrats! Your discount code "${discountCode}" is applied!`;
+                console.log("Data Layer Updated:", window.dataLayer);
             }
         }
-        window.onload = getDiscountCode;
+        window.onload = getQueryParams;
     </script>
 </head>
 <body>
-        <!-- Google Tag Manager (noscript) -->
-        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MX9RCJTX"
-            height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-        <!-- End Google Tag Manager (noscript) -->    
-    <h1>Welcome to Our Discount Page!</h1>
-    <p id="discountMessage">Enter a discount code in the URL.</p>
+    <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MX9RCJTX"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <h1>GTM Data Layer Example</h1>
+    <button onclick="sendApiRequest()">Send API Request</button>
+
+    <script>
+        // Function to send API request using query params from GTM Data Layer
+        function sendApiRequest() {
+            const keyValuePair = window.dataLayer.find(obj => obj.key && obj.value);
+            
+            if (!keyValuePair) {
+                console.error("Key and value not found in dataLayer.");
+                return;
+            }
+
+            const apiUrl = `https://httpbin.org/get?key=${keyValuePair.key}&value=${keyValuePair.value}`;
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => console.log("API Response:", data))
+                .catch(error => console.error("API Error:", error));
+        }
+    </script>
 </body>
 </html>
