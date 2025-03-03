@@ -1,36 +1,49 @@
-// Function to get query parameters from the URL
+// ✅ Function to get query parameters from URL
 function getQueryParams() {
     const params = new URLSearchParams(window.location.search);
     return {
-        key: params.get("key") || null,  // Use null instead of default values
-        value: params.get("value") || null
+        key: params.get("key") || "defaultKey",
+        value: params.get("value") || "defaultValue"
     };
 }
 
-// Push data to Google Tag Manager Data Layer (only if values exist)
+// ✅ Push query params to GTM's dataLayer
 window.dataLayer = window.dataLayer || [];
 const queryParams = getQueryParams();
-
-if (queryParams.key && queryParams.value) {  
-    window.dataLayer.push({
-        event: "queryCaptured",
-        key: queryParams.key,
-        value: queryParams.value
-    });
-}
-
-// Display the extracted value on the page
-document.addEventListener("DOMContentLoaded", () => {
-    setTimeout(() => {
-        const modifiedValue = window.dataLayer.find(d => d.value)?.value || queryParams.value;
-        document.getElementById("discount-text").innerText = `You have a special offer: ${modifiedValue}`;
-    }, 1000);  // Ensure GTM has time to update
+window.dataLayer.push({
+    event: "queryCaptured",
+    key: queryParams.key,
+    value: queryParams.value
 });
 
-// API Call on Button Click
+// ✅ Dynamically update discount text
+document.addEventListener("DOMContentLoaded", () => {
+    const discountText = document.getElementById("discount-text");
+    
+    // Modify discount dynamically based on GTM (e.g., change "20off" to "10off")
+    let modifiedDiscount = queryParams.value === "20off" ? "10off" : queryParams.value;
+    
+    // Push modified discount to GTM
+    window.dataLayer.push({
+        event: "discountModified",
+        modifiedDiscountValue: modifiedDiscount
+    });
+
+    // Update UI
+    discountText.innerText = `You have a special offer: ${modifiedDiscount}`;
+});
+
+// ✅ API Call on Button Click
 document.getElementById("fetch-data").addEventListener("click", () => {
     fetch(`https://httpbin.org/get?key=${queryParams.key}&value=${queryParams.value}`)
         .then(response => response.json())
-        .then(data => console.log("API Response:", data))
+        .then(data => {
+            console.log("API Response:", data);
+        })
         .catch(error => console.error("API Error:", error));
 });
+
+// ✅ Debugging: Log query params and data layer
+console.log("Current URL:", window.location.href);
+console.log("Query Params:", new URLSearchParams(window.location.search).toString());
+console.log("Current Data Layer:", window.dataLayer);
