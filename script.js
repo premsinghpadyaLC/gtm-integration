@@ -1,49 +1,40 @@
-// ✅ Function to get query parameters from URL
+// Function to get query parameters from URL
 function getQueryParams() {
-    const params = new URLSearchParams(window.location.search);
-    return {
-        key: params.get("key") || "defaultKey",
-        value: params.get("value") || "defaultValue"
-    };
+    let params = new URLSearchParams(window.location.search);
+    let key = params.get("key");
+    let value = params.get("value");
+
+    if (key && value) {
+        // Push to Google Tag Manager Data Layer
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+            'event': 'queryCaptured',
+            'discountType': key,
+            'discountValue': value
+        });
+
+        // Update UI Discount
+        document.getElementById("discount").textContent = value;
+        
+        // Apply Discount to Final Price
+        let originalPrice = 1000;
+        let discountAmount = parseInt(value.replace(/\D/g, ""), 10) || 0; // Extract number
+        let newPrice = originalPrice - (originalPrice * discountAmount / 100);
+        document.getElementById("final-price").textContent = "$" + newPrice;
+    }
 }
 
-// ✅ Push query params to GTM's dataLayer
-window.dataLayer = window.dataLayer || [];
-const queryParams = getQueryParams();
-window.dataLayer.push({
-    event: "queryCaptured",
-    key: queryParams.key,
-    value: queryParams.value
-});
+// Function to verify discount via API call
+function verifyDiscount() {
+    let params = new URLSearchParams(window.location.search);
+    let apiURL = "https://httpbin.org/get?" + params.toString();
 
-// ✅ Dynamically update discount text
-document.addEventListener("DOMContentLoaded", () => {
-    const discountText = document.getElementById("discount-text");
-    
-    // Modify discount dynamically based on GTM (e.g., change "20off" to "10off")
-    let modifiedDiscount = queryParams.value === "20off" ? "10off" : queryParams.value;
-    
-    // Push modified discount to GTM
-    window.dataLayer.push({
-        event: "discountModified",
-        modifiedDiscountValue: modifiedDiscount
-    });
-
-    // Update UI
-    discountText.innerText = `You have a special offer: ${modifiedDiscount}`;
-});
-
-// ✅ API Call on Button Click
-document.getElementById("fetch-data").addEventListener("click", () => {
-    fetch(`https://httpbin.org/get?key=${queryParams.key}&value=${queryParams.value}`)
+    fetch(apiURL)
         .then(response => response.json())
-        .then(data => {
-            console.log("API Response:", data);
-        })
-        .catch(error => console.error("API Error:", error));
-});
+        .then(data => console.log("API Response:", data))
+        .catch(error => console.error("Error:", error));
+}
 
-// ✅ Debugging: Log query params and data layer
-console.log("Current URL:", window.location.href);
-console.log("Query Params:", new URLSearchParams(window.location.search).toString());
-console.log("Current Data Layer:", window.dataLayer);
+// Event Listeners
+document.addEventListener("DOMContentLoaded", getQueryParams);
+document.getElementById("verify-discount").addEventListener("click", verifyDiscount);

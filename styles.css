@@ -1,28 +1,18 @@
 body {
     font-family: Arial, sans-serif;
     text-align: center;
-    margin: 50px;
 }
 
-h1 {
-    color: #333;
-}
-
-#discount-text {
-    font-size: 18px;
-    font-weight: bold;
-    color: green;
+#product img {
+    width: 300px;
+    height: auto;
 }
 
 button {
-    background-color: #007bff;
-    color: white;
-    padding: 10px;
-    border: none;
+    padding: 10px 20px;
+    margin: 10px;
     cursor: pointer;
-    font-size: 16px;
-}
-
-button:hover {
-    background-color: #0056b3;
+    background: #007BFF;
+    color: white;
+    border: none;
 }
