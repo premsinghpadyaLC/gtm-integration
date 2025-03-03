@@ -1,47 +1,27 @@
-// Google Tag Manager Data Layer Setup
-window.dataLayer = window.dataLayer || [];
-
-// Function to get query parameters from the URL and filter out GTM-related params
-function getQueryParams() {
+// Function to get query parameters and filter out GTM-related ones
+function getFilteredQueryParams() {
     let params = new URLSearchParams(window.location.search);
-    let queryParams = {};
+    let filteredParams = new URLSearchParams();
 
     // Exclude GTM-related parameters
     const excludedParams = ["gtm.start", "event", "gtm.uniqueEventId", "gtm_debug"];
 
     for (let [key, value] of params.entries()) {
         if (!excludedParams.includes(key)) {
-            queryParams[key] = value;
-            window.dataLayer.push({ [key]: value }); // Push to GTM Data Layer
+            filteredParams.append(key, value);
         }
     }
 
-    console.log("Filtered Query Parameters:", queryParams);
+    console.log("Filtered Query Parameters:", Object.fromEntries(filteredParams.entries()));
 
-    // Display Discount Info if applicable
-    if (queryParams.discount) {
-        document.getElementById('discount-info').innerText = 
-            `🎉 Special Offer: ${queryParams.discount} Discount!`;
-    }
+    return filteredParams.toString();
 }
 
-// Function to send API Request with only relevant key-value pairs
+// Function to send API request with filtered query parameters
 function fetchAPIData() {
-    let queryData = {};
+    let queryString = getFilteredQueryParams();
 
-    // Extract key-value pairs from GTM Data Layer and filter out GTM-related parameters
-    const excludedParams = ["gtm.start", "event", "gtm.uniqueEventId", "gtm_debug"];
-
-    for (let obj of window.dataLayer) {
-        for (let key in obj) {
-            if (!excludedParams.includes(key)) {
-                queryData[key] = obj[key];
-            }
-        }
-    }
-
-    if (Object.keys(queryData).length > 0) {
-        let queryString = new URLSearchParams(queryData).toString();
+    if (queryString) {
         let apiUrl = `https://httpbin.org/get?${queryString}`;
 
         console.log(`Fetching API: ${apiUrl}`);
@@ -50,8 +30,6 @@ function fetchAPIData() {
             .then(response => response.json())
             .then(data => {
                 console.log("API Response:", data);
-
-                // Display response on webpage
                 document.getElementById('discount-info').innerText = 
                     `✅ API Response: ${JSON.stringify(data.args, null, 2)}`;
             })
@@ -63,6 +41,5 @@ function fetchAPIData() {
 
 // Run on Page Load
 document.addEventListener("DOMContentLoaded", () => {
-    getQueryParams();
-    document.getElementById("fetch-api").addEventListener("click", fetchAPIData);
+    fetchAPIData(); // Fetch API on page load
 });
