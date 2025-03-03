@@ -20,24 +20,36 @@ function getQueryParams() {
     }
 }
 
-// Function to send API Request
+// Function to send API Request with correct key-value pair
 function fetchAPIData() {
-    let key = window.dataLayer.length > 0 ? Object.keys(window.dataLayer[0])[0] : null;
-    let value = key ? window.dataLayer[0][key] : null;
+    let key, value;
+
+    // Extract key-value pairs from GTM Data Layer
+    for (let obj of window.dataLayer) {
+        let keys = Object.keys(obj);
+        if (keys.length > 0) {
+            key = keys[0];   // Get the first key
+            value = obj[key]; // Get the corresponding value
+            break;
+        }
+    }
 
     if (key && value) {
-        let apiUrl = `https://httpbin.org/get?${key}=${value}`;
+        let apiUrl = `https://httpbin.org/get?${key}=${encodeURIComponent(value)}`;
         console.log(`Fetching API: ${apiUrl}`);
 
         fetch(apiUrl)
             .then(response => response.json())
             .then(data => {
                 console.log("API Response:", data);
-                alert("API Response Logged in Console");
+
+                // Display response on webpage instead of console
+                document.getElementById('discount-info').innerText = 
+                    `API Response: ${JSON.stringify(data.args)}`;
             })
             .catch(error => console.error("Error fetching API:", error));
     } else {
-        alert("No query parameters found in GTM Data Layer!");
+        alert("No valid query parameters found in GTM Data Layer!");
     }
 }
 
