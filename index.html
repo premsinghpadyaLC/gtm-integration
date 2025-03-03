@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tech Store - Buy Laptop</title>
+    <title>Shopping Cart</title>
     <link rel="stylesheet" href="styles.css">
 
 <!-- Google Tag Manager -->
@@ -15,28 +15,37 @@
     <!-- End Google Tag Manager -->
 </head>
 <body>
-
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-54XT7VWG"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
-
     <header>
-        <h1>Welcome to Tech Store</h1>
+        <h1>Your Cart</h1>
     </header>
-
-    <section id="product">
-        <img src="laptop.jfif" alt="Laptop Image">
-        <h2>Dell XPS 15</h2>
-        <p>High-performance laptop for professionals and gamers.</p>
-        <p><strong>Price: $1000</strong></p>
-        <p id="discount-text">Discount: <span id="discount">0%</span></p>
-        <p><strong>Final Price: <span id="final-price">$1000</span></strong></p>
-        
-        <button id="add-to-cart">Add to Cart</button>
-        <button id="verify-discount">Verify Discount</button>
+    <section id="cart">
+        <ul id="cart-items"></ul>
+        <p><strong>Total Price: <span id="total-price">$0</span></strong></p>
     </section>
 
-    <script src="script.js"></script>
+    <script>
+        function loadCart() {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            let cartList = document.getElementById("cart-items");
+            let totalPrice = 0;
+
+            cartList.innerHTML = "";
+            cart.forEach(item => {
+                let li = document.createElement("li");
+                li.textContent = `${item.name} - ${item.price}`;
+                cartList.appendChild(li);
+
+                totalPrice += parseFloat(item.price.replace("$", ""));
+            });
+
+            document.getElementById("total-price").textContent = "$" + totalPrice.toFixed(2);
+        }
+
+        document.addEventListener("DOMContentLoaded", loadCart);
+    </script>
 </body>
 </html>
