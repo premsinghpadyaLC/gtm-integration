@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart</title>
-    <link rel="stylesheet" href="styles.css">
-
+    <title>GTM & API Integration</title>
+    
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -13,39 +12,53 @@
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-54XT7VWG');</script>
     <!-- End Google Tag Manager -->
+    
+    <script>
+        // Extract query parameters and push to GTM dataLayer
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            const key = params.get('key');
+            const value = params.get('value');
+            
+            if (key && value) {
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    'event': 'customEvent',
+                    'queryKey': key,
+                    'queryValue': value
+                });
+            }
+        }
+        
+        // Call function on page load
+        window.onload = getQueryParams;
+        
+        // API call using stored GTM data
+        function sendAPIRequest() {
+            if (window.dataLayer) {
+                const data = window.dataLayer.find(item => item.queryKey && item.queryValue);
+                if (data) {
+                    const apiUrl = `https://httpbin.org/get?${data.queryKey}=${data.queryValue}`;
+                    fetch(apiUrl)
+                        .then(response => response.json())
+                        .then(data => console.log('API Response:', data))
+                        .catch(error => console.error('API Error:', error));
+                } else {
+                    console.error('No query data found in dataLayer');
+                }
+            }
+        }
+    </script>
 </head>
 <body>
+    <h1>Google Tag Manager & API Integration</h1>
+    <p>Open the console (F12) to see the logs.</p>
+    
+    <button onclick="sendAPIRequest()">Send API Request</button>
+    
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-54XT7VWG"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
-    <header>
-        <h1>Your Cart</h1>
-    </header>
-    <section id="cart">
-        <ul id="cart-items"></ul>
-        <p><strong>Total Price: <span id="total-price">$0</span></strong></p>
-    </section>
-
-    <script>
-        function loadCart() {
-            let cart = JSON.parse(localStorage.getItem("cart")) || [];
-            let cartList = document.getElementById("cart-items");
-            let totalPrice = 0;
-
-            cartList.innerHTML = "";
-            cart.forEach(item => {
-                let li = document.createElement("li");
-                li.textContent = `${item.name} - ${item.price}`;
-                cartList.appendChild(li);
-
-                totalPrice += parseFloat(item.price.replace("$", ""));
-            });
-
-            document.getElementById("total-price").textContent = "$" + totalPrice.toFixed(2);
-        }
-
-        document.addEventListener("DOMContentLoaded", loadCart);
-    </script>
-</body>
+    </body>
 </html>
