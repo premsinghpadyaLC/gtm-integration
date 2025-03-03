@@ -16,10 +16,12 @@ window.dataLayer.push({
     value: queryParams.value
 });
 
-// Update the UI with the discount value
+// Fetch modified discount value from GTM
 document.addEventListener("DOMContentLoaded", () => {
-    const discountText = document.getElementById("discount-text");
-    discountText.innerText = `You have a special offer: ${queryParams.value}`;
+    setTimeout(() => {
+        const modifiedValue = window.dataLayer.find(d => d.value)?.value || queryParams.value;
+        document.getElementById("discount-text").innerText = `You have a special offer: ${modifiedValue}`;
+    }, 1000);  // Wait for GTM to update the dataLayer
 });
 
 // API Call on Button Click
