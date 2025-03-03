@@ -3,7 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTM Demo</title>
+    <title>GTM Integration</title>
+    <script>
+        // Initialize GTM Data Layer if not already defined
+        window.dataLayer = window.dataLayer || [];
+
+        // Function to extract query parameters from URL
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            const key = params.get("key");
+            const value = params.get("value");
+
+            if (key && value) {
+                // Push key-value pair into GTM Data Layer
+                window.dataLayer.push({
+                    event: "queryParamsCaptured",
+                    key: key,
+                    value: value
+                });
+
+                console.log("Data Layer Updated:", window.dataLayer);
+            } else {
+                console.error("Key and value not found in dataLayer.");
+            }
+        }
+
+        // Wait for GTM to load before extracting query params
+        window.addEventListener("load", () => {
+            setTimeout(getQueryParams, 500); // Delay to ensure GTM is ready
+        });
+    </script>
 
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -41,30 +70,25 @@
 
     <button id="fetchData">Fetch API Data</button>
 
-<script>
-    document.getElementById('fetchData').addEventListener('click', function () {
-        if (window.dataLayer && window.dataLayer.length > 0) {
-            const latestData = window.dataLayer[window.dataLayer.length - 1]; // Get the last pushed data
-            const key = latestData.key;
-            const value = latestData.value;
+    <h1>GTM Data Layer Example</h1>
+    <button onclick="sendApiRequest()">Send API Request</button>
 
-            if (key && value) {
-                const apiUrl = `https://httpbin.org/get?key=${encodeURIComponent(key)}&value=${encodeURIComponent(value)}`;
-
-                fetch(apiUrl)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log("API Response:", data);
-                    })
-                    .catch(error => console.error("Error fetching data:", error));
-            } else {
-                console.log("Key and value not found in dataLayer.");
+    <script>
+        // Function to send API request using query params from GTM Data Layer
+        function sendApiRequest() {
+            const keyValuePair = window.dataLayer.find(obj => obj.key && obj.value);
+            
+            if (!keyValuePair) {
+                console.error("Key and value not found in dataLayer.");
+                return;
             }
-        } else {
-            console.log("Data Layer is empty.");
-        }
-    });
-</script>
 
+            const apiUrl = `https://httpbin.org/get?key=${keyValuePair.key}&value=${keyValuePair.value}`;
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => console.log("API Response:", data))
+                .catch(error => console.error("API Error:", error));
+        }
+    </script>
 </body>
 </html>
