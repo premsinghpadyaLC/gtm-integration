@@ -1,27 +1,26 @@
-// Function to get query parameters from URL
-function getQueryParams() {
-    let params = new URLSearchParams(window.location.search);
-    let key = params.get("key");
-    let value = params.get("value");
+// Function to get the discount value from GTM
+function applyDiscount() {
+    let discountValue = window.dataLayer[0]['discountValue'] || "0%"; // Get from GTM
 
-    if (key && value) {
-        // Push to Google Tag Manager Data Layer
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({
-            'event': 'queryCaptured',
-            'discountType': key,
-            'discountValue': value
-        });
+    document.getElementById("discount").textContent = discountValue;
 
-        // Update UI Discount
-        document.getElementById("discount").textContent = value;
-        
-        // Apply Discount to Final Price
-        let originalPrice = 1000;
-        let discountAmount = parseInt(value.replace(/\D/g, ""), 10) || 0; // Extract number
-        let newPrice = originalPrice - (originalPrice * discountAmount / 100);
-        document.getElementById("final-price").textContent = "$" + newPrice;
-    }
+    // Apply Discount to Final Price
+    let originalPrice = 1000;
+    let discountAmount = parseInt(discountValue.replace(/\D/g, ""), 10) || 0;
+    let newPrice = originalPrice - (originalPrice * discountAmount / 100);
+    document.getElementById("final-price").textContent = "$" + newPrice;
+}
+
+// Function to add product to cart
+function addToCart() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let product = {
+        name: "Dell XPS 15",
+        price: document.getElementById("final-price").textContent
+    };
+    cart.push(product);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert("Added to Cart!");
 }
 
 // Function to verify discount via API call
@@ -36,5 +35,6 @@ function verifyDiscount() {
 }
 
 // Event Listeners
-document.addEventListener("DOMContentLoaded", getQueryParams);
+document.addEventListener("DOMContentLoaded", applyDiscount);
+document.getElementById("add-to-cart").addEventListener("click", addToCart);
 document.getElementById("verify-discount").addEventListener("click", verifyDiscount);
