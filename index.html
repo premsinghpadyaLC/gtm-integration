@@ -34,41 +34,28 @@
         });
     </script>
 
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-MX9RCJTX');</script>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-MX9RCJTX');</script>
     <!-- End Google Tag Manager -->
 
-    <script>
-        // Function to get URL query parameters
-        function getQueryParams() {
-            const params = new URLSearchParams(window.location.search);
-            const key = params.get('key');
-            const value = params.get('value');
-            if (key && value) {
-                window.dataLayer = window.dataLayer || [];
-                window.dataLayer.push({
-                    'key': key,
-                    'value': value,
-                    'event': 'queryParamsCaptured'
-                });
-                console.log("Data Layer Updated:", window.dataLayer);
-            }
-        }
-        window.onload = getQueryParams;
-    </script>
 </head>
 <body>
+
     <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MX9RCJTX"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MX9RCJTX"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
 
     <h1>GTM Data Layer Example</h1>
     <button onclick="sendApiRequest()">Send API Request</button>
+
+    <!-- Section to display API response -->
+    <h2>API Response:</h2>
+    <pre id="apiResponse">No response yet.</pre>
 
     <script>
         // Function to send API request using query params from GTM Data Layer
@@ -77,15 +64,24 @@
             
             if (!keyValuePair) {
                 console.error("Key and value not found in dataLayer.");
+                document.getElementById("apiResponse").textContent = "Error: Key and value not found in dataLayer.";
                 return;
             }
 
             const apiUrl = `https://httpbin.org/get?key=${keyValuePair.key}&value=${keyValuePair.value}`;
             fetch(apiUrl)
                 .then(response => response.json())
-                .then(data => console.log("API Response:", data))
-                .catch(error => console.error("API Error:", error));
+                .then(data => {
+                    console.log("API Response:", data);
+                    // Display API response in the UI
+                    document.getElementById("apiResponse").textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    console.error("API Error:", error);
+                    document.getElementById("apiResponse").textContent = "Error: Unable to fetch API response.";
+                });
         }
     </script>
+
 </body>
 </html>
